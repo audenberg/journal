@@ -1,13 +1,14 @@
 package com.aud.demo.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
+@RequestMapping("/test")
 public class LoginController {
 
-	@RequestMapping(value="/test", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public String index() {
 		return "index";
 	}
