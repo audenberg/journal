@@ -17,8 +17,7 @@ public class SpringTestAppApplication{
 	
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@Autowired
-	StudentRepo studentRepo;
+	
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringTestAppApplication.class, args);
