@@ -32,6 +32,7 @@ public class AuthorServiceImpl implements AuthorService{
 		// TODO Auto-generated method stub
 		
 		ar.save(author);
+
 	}
 
 	@Override
@@ -40,6 +41,8 @@ public class AuthorServiceImpl implements AuthorService{
 		
 		
 		ar.save(author);
+		
+		
 		
 	}
 
