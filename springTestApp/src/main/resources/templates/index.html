@@ -50,6 +50,7 @@
 	<th>Name</th>
 	<th>Email</th>
 	<th>Mobile</th>	
+	<th>Action</th>
 	</thead>
 	<tbody>
 	<tr ng-repeat="x in authors">
@@ -57,6 +58,10 @@
 	<td>{{x.fname+" "+x.lname}}</td>
 	<td>{{x.email}}</td>
 	<td>{{x.mobile}}</td>
+	<td>
+		<button ng-click="editAuthor($index)"><span class="fa fa-pencil">Update</span></button>
+		<button ng-click="deleteAuthor($index)"><span class="fa fa-trash">Delete</span></button>
+	</td>
 	
 	</tr>
 	
