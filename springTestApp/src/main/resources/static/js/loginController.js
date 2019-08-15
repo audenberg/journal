@@ -6,14 +6,14 @@
 var app = angular.module('myApp', []);
 app.controller('loginCtrl', function($scope,$http) {
 	
-    $scope.author={};
-    $scope.initAuthor={};
-    $scope.authors=[];
-    $scope.selectedIndex = "";
+    $scope.author = {};
+    $scope.initAuthor = {};
+    $scope.authors = [];
+    $scope.selectedIndex;
     
     
     // just to avoid entering author details repeatedly
-    $scope.initAuthor.id=0;
+    $scope.initAuthor.id=null;
     $scope.initAuthor.fname="sameer";
     $scope.initAuthor.lname="lname";
     $scope.initAuthor.email="email";
@@ -60,6 +60,9 @@ app.controller('loginCtrl', function($scope,$http) {
         	}
         	
         	$scope.author = $scope.initAuthor;
+        	
+        	  $('#accForm').find("input[type=text], textarea").val("");
+        	
         	$('#registerModal').modal('toggle');
         	
         }, 
@@ -100,9 +103,44 @@ $scope.getAuthors();
 
 
 
+let copiedItem = null;
+
+$scope.deleteAuthor = function(index){
+	 
+	var id =  $scope.authors[index].id;
+	console.log("Deleting Author with ID:"+parseInt(id));
+	
+	 $http({
+         url: '/author/delete/'+parseInt(id),
+         method: "DELETE",
+         
+         	 
+     })
+     .then(function(response) {
+             // success
+    	 
+    	 $scope.authors.splice(index,1);
+    	 
+    	 
+    	 
+    	 console.log("Index is:"+index);
+     	 console.log($scope.authors);
+    	 console.log(response);
+     	
+     	
+     }, 
+     function(response) { // optional
+             // failed
+     	console.log("failed");
+     	console.log(response);
+     });
+}
+
+
 $scope.editAuthor = function(index){
 	console.log("Index:"+index);
-	$scope.author = $scope.authors[index];
+	copiedItem = Object.assign({}, copiedItem , $scope.authors[index] );
+	$scope.author = copiedItem;
 	console.log($scope.author);
 	$scope.selectedIndex = index;
 

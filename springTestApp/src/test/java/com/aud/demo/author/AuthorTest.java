@@ -10,7 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import com.aud.demo.model.Author;
 import com.aud.demo.service.AuthorServiceImpl;
 
-@SpringBootTest
+
 class AuthorTest {
 
 	@Autowired
