@@ -10,6 +10,7 @@ app.controller('loginCtrl', function($scope,$http) {
     $scope.initAuthor = {};
     $scope.authors = [];
     $scope.selectedIndex;
+    $scope.errors = {};
     
     
     // just to avoid entering author details repeatedly
@@ -52,11 +53,12 @@ app.controller('loginCtrl', function($scope,$http) {
                 // success
         	
         	console.log(response);
-        	
+        	if(response.data.type=="success"){
+        		$scope.errors = {};
         	if(method=="POST"){
-        	 $scope.authors.push(response.data);   //insert
+        	 $scope.authors.push(response.data.obj);   //insert
         	}else{
-             $scope.authors[$scope.selectedIndex] = response.data;  //update
+             $scope.authors[$scope.selectedIndex] = response.data.obj;  //update
         	}
         	
         	$scope.author = $scope.initAuthor;
@@ -64,6 +66,13 @@ app.controller('loginCtrl', function($scope,$http) {
         	  $('#accForm').find("input[type=text], textarea").val("");
         	
         	$('#registerModal').modal('toggle');
+        	
+        	}else {
+        		
+        		$scope.errors = response.data.errors;
+        		console.log($scope.errors);
+        		console.log(angular.equals($scope.errors, {}));
+        	}
         	
         }, 
         function(response) { // optional

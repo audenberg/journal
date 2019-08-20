@@ -1,9 +1,19 @@
 package com.aud.demo.model;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
+
 
 
 @MappedSuperclass
@@ -13,9 +23,13 @@ public class Person {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	
 	Long id;
+	@NotEmpty(message = "*Please provide First Name")
 	String fname;
 	String lname;
 	String email;
+	
+	@Pattern(regexp="^([1-9])\\d{9}", message = "*Please provide a valid contact number")
+//	@NotEmpty(message = "*Please provide your contact number")
 	String mobile;
 	String password;
 	
@@ -27,6 +41,9 @@ public class Person {
 	String country;
 	String pincode;
 	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles;
 	
 	
 	public Person() {
