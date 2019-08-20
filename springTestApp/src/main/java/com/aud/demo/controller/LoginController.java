@@ -12,10 +12,5 @@ public class LoginController {
 	public String index() {
 		return "index";
 	}
-	
-	@RequestMapping(value="/registration" ,method = RequestMethod.GET)
-	public String registration() {
-		return new BCryptPasswordEncoder().encode("password");
-	}
-	
+
 }

@@ -6,10 +6,12 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aud.demo.model.Author;
 import com.aud.demo.repository.AuthorRepository;
+import com.aud.demo.repository.RoleRepository;
 
 @Service
 public class AuthorServiceImpl implements AuthorService{
@@ -17,6 +19,11 @@ public class AuthorServiceImpl implements AuthorService{
 	@Autowired
 	AuthorRepository ar;
 
+	@Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Override
@@ -74,5 +81,7 @@ public class AuthorServiceImpl implements AuthorService{
 		
 		
 	}
+	
+	
 
 }

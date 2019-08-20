@@ -1,4 +1,4 @@
-package com.audenberg.configuration;
+package com.aud.demo.configuration;
 
 import javax.sql.DataSource;
 
