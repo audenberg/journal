@@ -162,6 +162,14 @@ public class Person {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
 	
 
 }
