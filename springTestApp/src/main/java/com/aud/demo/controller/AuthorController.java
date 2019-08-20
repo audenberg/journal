@@ -2,9 +2,14 @@ package com.aud.demo.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aud.demo.model.Author;
 import com.aud.demo.service.AuthorServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.minidev.json.JSONObject;
+
+
 
 
 @RestController
@@ -30,29 +39,74 @@ public class AuthorController {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@PostMapping("/register")
-	public Author registerAuthor(@RequestBody Author author) {
+	public String registerAuthor(@RequestBody @Valid Author author, BindingResult bindingResult) {
 		
-		Long id = authorService.saveAuthor(author);
-		author.setId(id);
-		
-		logger.info("Author -> {}",author.toString());
-		return author;
+		return saveOrUpdate(author, bindingResult);
 		
 	}
 	
 	
 	@PutMapping("/register")
-	public Author updateAuthor(@RequestBody Author author) {
+	public String updateAuthor(@RequestBody @Valid Author author, BindingResult bindingResult) {
 		
+		
+		return saveOrUpdate(author, bindingResult);
+		
+		
+	}
+	
+	
+	
+public String saveOrUpdate(Author author, BindingResult bindingResult) {
+		
+		String fieldName="";
+		String errorMsg="";
+		
+		JSONObject responce = new JSONObject();
+		JSONObject errors = new JSONObject();
+		
+
+		
+		if (bindingResult.hasErrors()) {
+			
+			 logger.info("Author->{} Binding results {}",author,bindingResult.getAllErrors());
+			
+			 responce.put("type", "error");
+			 responce.put("text", "Below Fields are mandatory");
+			
+			 for (Object object : bindingResult.getAllErrors()) {
+				 
+				    if(object instanceof FieldError) {
+				        FieldError fieldError = (FieldError) object;
+				        fieldName = fieldError.getField()+"Err";
+				        logger.info(" Binding Codes-> {}",fieldName);
+				        
+				    }
+
+				    if(object instanceof ObjectError) {
+				        ObjectError objectError = (ObjectError) object;
+				        errorMsg = objectError.getDefaultMessage();
+				        logger.info(" Binding Errors-> {} Message {}",objectError.getCode(),errorMsg);
+				    }
+				    errors.put(fieldName, errorMsg);
+				    
+				    
+				}
+			 responce.put("errors", errors);
+			 return responce.toJSONString();
+		}else {
+
 		Long id = authorService.saveAuthor(author);
 		author.setId(id);
 		
 		logger.info("Author -> {}",author.toString());
-		return author;
-		
-		
-		
-	}
+			responce.put("type", "success");
+			responce.put("obj", author);
+			return responce.toJSONString();
+			
+		}	
+}
+	
 	
 	@DeleteMapping("/delete/{authorId}")
 	public String deleteAuthor(@PathVariable long authorId) {
