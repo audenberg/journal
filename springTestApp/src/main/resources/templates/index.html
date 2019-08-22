@@ -3,6 +3,8 @@
 	xmlns:th="http://www.thymeleaf.org"
 	 xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 	 
+	 
+	 
 <head>
 
 <title>Author CRUD</title>
@@ -18,25 +20,38 @@
   	<script th:src="@{/js/jquery.min.js}"></script>
   	<script th:src="@{/js/bootstrap.min.js}"></script>
   	<script th:src="@{/js/angular.min.js}"></script>
-  	<script th:src="@{/js/loginController.js}" ></script>
+  	<script th:src="@{/js/authorController.js}" ></script>
   	
+  	
+  	<meta name="_csrf" th:content="${_csrf.token}"/>
+<!-- default header name is X-CSRF-TOKEN -->
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
 </head>
 
 <body ng-app="myApp">
 
-<div ng-controller=loginCtrl>
+<div ng-controller=authorCtrl>
 
 
 <div class="container-fluid">
 
 <div class="row">
-			<div class="col-md-10">
+			<div class="col-md-8">
 				<h3>Internation Journal</h3>
 			</div>
 			<div class="col-md-2">
 				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">
 				 Register
 				</button>
+				</div>
+				<div class="col-md-2">
+				<div sec:authorize="isAuthenticated()">
+  	<p style="font-size: 10pt; color: #003333;" th:text="${userName}" />
+    <form th:action="@{/logout}" method="post">
+            <input class="btn btn-md btn-primary btn-block" type="submit" value="Sign Out"/>
+        </form>
+  </div>
 			</div>
 </div>
 

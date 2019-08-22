@@ -10,7 +10,7 @@ public class test {
 
 	
 	
-	@RequestMapping(value="/registration" ,method = RequestMethod.GET)
+	@RequestMapping(value="/test" ,method = RequestMethod.GET)
 	public String registration() {
 		return new BCryptPasswordEncoder().encode("password");
 	}

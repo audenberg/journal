@@ -1,6 +1,10 @@
 package com.aud.demo.model;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 @Entity
 public class Author extends Person {
@@ -12,17 +16,38 @@ public class Author extends Person {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Author(Long id, String fname, String lname, String email, String password, String line1, String line2,
-			String city, String state, String country, String pincode) {
-		super(id, fname, lname, email, password, line1, line2, city, state, country, pincode);
+	
+
+	public Author(Long id, @NotEmpty(message = "*Please provide First Name") String fname, String lname, String email,
+			@Pattern(regexp = "^([1-9])\\d{9}", message = "*Please provide a valid contact number") String mobile,
+			String password, String line1, String line2, String city, String state, String country, String pincode,
+			int active, int otp, boolean verified, Set<Role> roles) {
+		super(id, fname, lname, email, mobile, password, line1, line2, city, state, country, pincode, active, otp, verified,
+				roles);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Author(String fname, String lname, String email, String mobile, String password, String line1, String line2,
-			String city, String state, String country, String pincode) {
-		super(fname, lname, email, mobile, password, line1, line2, city, state, country, pincode);
+
+
+	public Author(Long id, @NotEmpty(message = "*Please provide First Name") String fname, String lname, String email,
+			@Pattern(regexp = "^([1-9])\\d{9}", message = "*Please provide a valid contact number") String mobile,
+			String password, String line1, String line2, String city, String state, String country, String pincode,
+			int active, int otp, boolean verified) {
+		super(id, fname, lname, email, mobile, password, line1, line2, city, state, country, pincode, active, otp, verified);
 		// TODO Auto-generated constructor stub
 	}
+
+
+
+	public Author(@NotEmpty(message = "*Please provide First Name") String fname, String lname, String email,
+			@Pattern(regexp = "^([1-9])\\d{9}", message = "*Please provide a valid contact number") String mobile,
+			String password, String line1, String line2, String city, String state, String country, String pincode,
+			int active, int otp, boolean verified, Set<Role> roles) {
+		super(fname, lname, email, mobile, password, line1, line2, city, state, country, pincode, active, otp, verified, roles);
+		// TODO Auto-generated constructor stub
+	}
+
+
 
 	@Override
 	public String toString() {
