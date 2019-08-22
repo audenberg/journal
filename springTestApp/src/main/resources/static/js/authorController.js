@@ -4,7 +4,7 @@
 
 
 var app = angular.module('myApp', []);
-app.controller('loginCtrl', function($scope,$http) {
+app.controller('authorCtrl', function($scope,$http) {
 	
     $scope.author = {};
     $scope.initAuthor = {};
@@ -27,13 +27,13 @@ app.controller('loginCtrl', function($scope,$http) {
     $scope.initAuthor.country="country";
     $scope.initAuthor.pincode="pincode";
     
-    
+
     $scope.author= $scope.initAuthor;
     
     $scope.registerAuthor = function(){
-    	
+    	$scope.CSRF_TOKEN = $("meta[name='_csrf']").attr("content");
     	console.log(angular.toJson($scope.author));
-    	
+    	console.log("CSRF_Token:"+ $scope.CSRF_TOKEN);
     	var method = "POST";
     	
     	if($scope.author.id>0){
@@ -45,7 +45,8 @@ app.controller('loginCtrl', function($scope,$http) {
             method: method,
             data: angular.toJson($scope.author),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': $scope.CSRF_TOKEN,
             }
             	 
         })
@@ -116,12 +117,16 @@ let copiedItem = null;
 
 $scope.deleteAuthor = function(index){
 	 
+	$scope.CSRF_TOKEN = $("meta[name='_csrf']").attr("content");
 	var id =  $scope.authors[index].id;
 	console.log("Deleting Author with ID:"+parseInt(id));
 	
 	 $http({
          url: '/author/delete/'+parseInt(id),
          method: "DELETE",
+         headers: {
+             'X-CSRF-TOKEN': $scope.CSRF_TOKEN,
+         }
          
          	 
      })

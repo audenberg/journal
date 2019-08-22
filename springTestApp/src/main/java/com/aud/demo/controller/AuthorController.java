@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -72,7 +73,7 @@ public String saveOrUpdate(Author author, BindingResult bindingResult) {
 			 logger.info("Author->{} Binding results {}",author,bindingResult.getAllErrors());
 			
 			 responce.put("type", "error");
-			 responce.put("text", "Below Fields are mandatory");
+			
 			
 			 for (Object object : bindingResult.getAllErrors()) {
 				 
@@ -95,7 +96,7 @@ public String saveOrUpdate(Author author, BindingResult bindingResult) {
 			 responce.put("errors", errors);
 			 return responce.toJSONString();
 		}else {
-
+	    author.setPassword( new BCryptPasswordEncoder().encode(author.getPassword()));
 		Long id = authorService.saveAuthor(author);
 		author.setId(id);
 		
