@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.aud.demo.model.Author;
-import com.aud.demo.repository.AuthorRepository;
+import com.aud.demo.model.User;
+import com.aud.demo.repository.UserRepository;
 import com.aud.demo.repository.RoleRepository;
 
 @Service
 public class AuthorServiceImpl implements AuthorService{
 	
 	@Autowired
-	AuthorRepository ar;
+	UserRepository ar;
 
 	@Autowired
     private RoleRepository roleRepository;
@@ -27,19 +27,19 @@ public class AuthorServiceImpl implements AuthorService{
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Override
-	public Author findAuthorByEmail(String email) {
+	public User findAuthorByEmail(String email) {
 		// TODO Auto-generated method stub
-		return ar.findAuthorByEmail(email);
+		return ar.findUserByEmail(email);
 	}
 
 	@Override
-	public List<Author> findAll() {
+	public List<User> findAll() {
 		// TODO Auto-generated method stub
 		return ar.findAll();
 	}
 
 	@Override
-	public Long saveAuthor(Author author) {
+	public Long saveAuthor(User author) {
 		// TODO Auto-generated method stub
 		
 		ar.save(author);
@@ -52,7 +52,7 @@ public class AuthorServiceImpl implements AuthorService{
 	}
 
 	@Override
-	public void updateAuthor(Author author) {
+	public void updateAuthor(User author) {
 		// TODO Auto-generated method stub
 		
 		
@@ -63,10 +63,10 @@ public class AuthorServiceImpl implements AuthorService{
 	}
 
 	@Override
-	public Author findAuthorById(long id) {
+	public User findAuthorById(long id) {
 		// TODO Auto-generated method stub
 		
-		 Optional<Author> OpAuthor = ar.findById(id);
+		 Optional<User> OpAuthor = ar.findById(id);
 		 if(OpAuthor.isPresent()) {
 			return OpAuthor.get(); 
 		 }else {
