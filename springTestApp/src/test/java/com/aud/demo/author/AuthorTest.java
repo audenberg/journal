@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.aud.demo.model.Author;
+import com.aud.demo.model.User;
 import com.aud.demo.service.AuthorServiceImpl;
 
 

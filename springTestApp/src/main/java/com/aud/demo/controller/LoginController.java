@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,10 +29,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.aud.demo.model.Author;
+import com.aud.demo.model.User;
 import com.aud.demo.model.Role;
 import com.aud.demo.repository.RoleRepository;
 import com.aud.demo.service.AuthorService;
+
+
 
 
 
@@ -40,12 +45,14 @@ public class LoginController {
 	private AuthorService authorService;
 	
 	
-	
 	@Autowired
     private RoleRepository roleRepository;
 
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	
 	@RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
-	public ModelAndView login(){
+	public ModelAndView login(HttpSession session){
 		
 		ModelAndView modelAndView = new ModelAndView();
 		
@@ -53,9 +60,12 @@ public class LoginController {
 		
 		System.out.println("Authname"+auth.getName());
 		
-		Author author = authorService.findAuthorByEmail(auth.getName());
-		
+		User author = authorService.findAuthorByEmail(auth.getName());
+		logger.info("User details:{}",author);
+		session.setAttribute("author", author);
 		if(author!=null) {
+			org.springframework.security.core.userdetails.User principal =(org.springframework.security.core.userdetails.User) auth.getPrincipal();
+			logger.info("Logger in user details are:{}",principal.toString());
 			modelAndView.addObject("userName", "Logged in as:" + author.getFname() + " " + author.getLname() );
 			
 			
@@ -106,11 +116,11 @@ public class LoginController {
 	public ModelAndView registration(){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Author author = authorService.findAuthorByEmail(auth.getName());
+		User author = authorService.findAuthorByEmail(auth.getName());
 		ModelAndView modelAndView = new ModelAndView();
 		if(author==null) {
 		
-		Author author1 = new Author();
+		User author1 = new User();
 		modelAndView.addObject("user", author1);
 		modelAndView.setViewName("registration");
 		return modelAndView;
@@ -124,9 +134,9 @@ public class LoginController {
 	
 	
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
-	public ModelAndView createNewAuthor(@Valid Author author, BindingResult bindingResult,HttpServletRequest request) {
+	public ModelAndView createNewAuthor(@Valid User author, BindingResult bindingResult,HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView();
-		Author authorExits = authorService.findAuthorByEmail(author.getEmail());
+		User authorExits = authorService.findAuthorByEmail(author.getEmail());
 		if (authorExits != null) {
 			bindingResult
 					.rejectValue("email", "error.user",
@@ -162,7 +172,8 @@ public class LoginController {
 	public ModelAndView validateNewAuthor(@RequestParam("otp") int otp) {
 		ModelAndView modelAndView = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Author author = authorService.findAuthorByEmail(auth.getName());
+		User author = authorService.findAuthorByEmail(auth.getName());
+		
 //		System.out.println("OTP:"+otp);
 		modelAndView.setViewName("/");
 		if (author != null) {
@@ -222,11 +233,11 @@ public class LoginController {
 	public ModelAndView forgotPassword(){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Author user = authorService.findAuthorByEmail(auth.getName());
+		User user = authorService.findAuthorByEmail(auth.getName());
 		ModelAndView modelAndView = new ModelAndView();
 		if(user==null) {
 		
-		Author user1 = new Author();
+		User user1 = new User();
 		modelAndView.addObject("user", user1);
 		modelAndView.setViewName("forgotPassword");
 		return modelAndView;
@@ -246,11 +257,11 @@ public class LoginController {
 	public ModelAndView forgotPasswordEmail(){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Author user = authorService.findAuthorByEmail(auth.getName());
+		User user = authorService.findAuthorByEmail(auth.getName());
 		ModelAndView modelAndView = new ModelAndView();
 		if(user==null) {
 		
-		Author user1 = new Author();
+		User user1 = new User();
 		modelAndView.addObject("user", user1);
 		modelAndView.setViewName("forgotPassword");
 		return modelAndView;
