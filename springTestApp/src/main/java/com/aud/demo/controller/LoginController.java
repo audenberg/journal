@@ -9,6 +9,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -29,8 +31,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.aud.demo.model.User;
 import com.aud.demo.model.Role;
+import com.aud.demo.model.User;
 import com.aud.demo.repository.RoleRepository;
 import com.aud.demo.service.AuthorService;
 
@@ -82,7 +84,7 @@ public class LoginController {
 			if(!author.isVerified()){
 			modelAndView.addObject("successMessage", "User has been registered successfully");
 			
-			modelAndView.setViewName("verifyOTP1");
+			modelAndView.setViewName("verifyOTP");
 			return modelAndView;
 				
 			}else {
@@ -132,7 +134,7 @@ public class LoginController {
 		
 	}
 	
-	
+	@Transactional
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
 	public ModelAndView createNewAuthor(@Valid User author, BindingResult bindingResult,HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView();
@@ -147,9 +149,19 @@ public class LoginController {
 		} else {
 			
 			author.setVerified(false);
+			author.setActive(1);
 			Random rnd = new Random();
 			int otp = 100000 + rnd.nextInt(900000);
 			author.setOtp(otp);
+			
+			Role author_role = new Role(2,"AUTHOR");
+		   
+			
+			
+			author.setPassword( new BCryptPasswordEncoder().encode(author.getPassword()));
+			long id = authorService.saveAuthor(author);
+			author.setId(id);
+			author.setRoles(new HashSet<Role>(Arrays.asList(author_role)));
 			authorService.saveAuthor(author);
 			
 			
@@ -168,19 +180,19 @@ public class LoginController {
 	}
 	
 	
-	@RequestMapping(value = "/validateAuthor", method = RequestMethod.POST)
+	@RequestMapping(value = "/validateUser", method = RequestMethod.POST)
 	public ModelAndView validateNewAuthor(@RequestParam("otp") int otp) {
 		ModelAndView modelAndView = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User author = authorService.findAuthorByEmail(auth.getName());
 		
-//		System.out.println("OTP:"+otp);
-		modelAndView.setViewName("/");
 		if (author != null) {
 		 if(author.getOtp()==otp) {
 			author.setVerified(true);
-			Role userRole = roleRepository.findByRole("USER");
-			author.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+			Role author_role = new Role(2,"AUTHOR");
+		    Role admin_role = new Role(1,"ADMIN");
+			
+			author.setRoles(new HashSet<Role>(Arrays.asList(author_role,admin_role)));
 			
 	
 			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(auth.getAuthorities());
