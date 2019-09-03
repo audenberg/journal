@@ -63,7 +63,7 @@ public class LoginController {
 		User author = authorService.findAuthorByEmail(auth.getName());
 		logger.info("User details:{}",author);
 		session.setAttribute("author", author);
-		if(author!=null) {
+		if(author!=null){
 			org.springframework.security.core.userdetails.User principal =(org.springframework.security.core.userdetails.User) auth.getPrincipal();
 			logger.info("Logger in user details are:{}",principal.toString());
 			modelAndView.addObject("userName", "Logged in as:" + author.getFname() + " " + author.getLname() );
