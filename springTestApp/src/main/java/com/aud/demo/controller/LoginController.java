@@ -80,9 +80,9 @@ public class LoginController {
 			        System.out.println(roles);    
 			
 			if(!author.isVerified()){
-//			modelAndView.addObject("successMessage", "User has been registered successfully");
+			modelAndView.addObject("successMessage", "User has been registered successfully");
 			
-			modelAndView.setViewName("verifyOTP");
+			modelAndView.setViewName("verifyOTP1");
 			return modelAndView;
 				
 			}else {
