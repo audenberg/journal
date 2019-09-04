@@ -48,7 +48,7 @@ public class AuthorRestController {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@PostMapping("/register")
-	public String registerAuthor(@RequestBody @Valid User author, BindingResult bindingResult) {
+	public String registerAuthor(@RequestBody @Valid User author, BindingResult bindingResult) throws Exception {
 		
 		return saveOrUpdate(author, bindingResult);
 		
@@ -57,7 +57,7 @@ public class AuthorRestController {
 	
 	
 	@PutMapping("/register")
-	public String updateAuthor(@RequestBody @Valid User author, BindingResult bindingResult) {
+	public String updateAuthor(@RequestBody @Valid User author, BindingResult bindingResult) throws Exception {
 		
 		
 		return saveOrUpdate(author, bindingResult);
@@ -85,7 +85,7 @@ Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 	}
 	
-public String saveOrUpdate(User author, BindingResult bindingResult) {
+public String saveOrUpdate(User author, BindingResult bindingResult) throws Exception {
 		
 		String fieldName="";
 		String errorMsg="";
@@ -93,67 +93,67 @@ public String saveOrUpdate(User author, BindingResult bindingResult) {
 		JSONObject responce = new JSONObject();
 		JSONObject errors = new JSONObject();
 		
-
+		throw new Exception();
 		
-		if (bindingResult.hasErrors()) {
-			
-			 logger.info("Author->{} Binding results {}",author,bindingResult.getAllErrors());
-			
-			 responce.put("type", "error");
-			
-			
-			 for (Object object : bindingResult.getAllErrors()) {
-				 
-				    if(object instanceof FieldError) {
-				        FieldError fieldError = (FieldError) object;
-				        fieldName = fieldError.getField()+"Err";
-				        logger.info(" Binding Codes-> {}",fieldName);
-				        
-				    }
-
-				    if(object instanceof ObjectError) {
-				        ObjectError objectError = (ObjectError) object;
-				        errorMsg = objectError.getDefaultMessage();
-				        logger.info(" Binding Errors-> {} Message {}",objectError.getCode(),errorMsg);
-				    }
-				    errors.put(fieldName, errorMsg);
-				    
-				    
-				}
-			 responce.put("errors", errors);
-			 return responce.toJSONString();
-		}else {
-	    author.setPassword( new BCryptPasswordEncoder().encode(author.getPassword()));
-	    
-	    //set an otp
-	   
-		Random rnd = new Random();
-		int otp = 100000 + rnd.nextInt(900000);
-		author.setOtp(otp);
-	    
-		
-		
-	    Role author_role = new Role(2,"AUTHOR");
-	    Role admin_role = new Role(1,"ADMIN");
-	    Set<Role> roles = new HashSet<>();
-	    roles.add(author_role);
-	    roles.add(admin_role);
-	    
-	    
-		Long id = authorService.saveAuthor(author);
-		author.setRoles(roles);
-		authorService.saveAuthor(author);
-		author.setId(id);
-		
-		
-		new Mail().sendMail(author);
-		
-		logger.info("Author -> {}",author.toString());
-			responce.put("type", "success");
-			responce.put("obj", author);
-			return responce.toJSONString();
-			
-		}	
+//		if (bindingResult.hasErrors()) {
+//			
+//			 logger.info("Author->{} Binding results {}",author,bindingResult.getAllErrors());
+//			
+//			 responce.put("type", "error");
+//			
+//			
+//			 for (Object object : bindingResult.getAllErrors()) {
+//				 
+//				    if(object instanceof FieldError) {
+//				        FieldError fieldError = (FieldError) object;
+//				        fieldName = fieldError.getField()+"Err";
+//				        logger.info(" Binding Codes-> {}",fieldName);
+//				        
+//				    }
+//
+//				    if(object instanceof ObjectError) {
+//				        ObjectError objectError = (ObjectError) object;
+//				        errorMsg = objectError.getDefaultMessage();
+//				        logger.info(" Binding Errors-> {} Message {}",objectError.getCode(),errorMsg);
+//				    }
+//				    errors.put(fieldName, errorMsg);
+//				    
+//				    
+//				}
+//			 responce.put("errors", errors);
+//			 return responce.toJSONString();
+//		}else {
+//	    author.setPassword( new BCryptPasswordEncoder().encode(author.getPassword()));
+//	    
+//	    //set an otp
+//	   
+//		Random rnd = new Random();
+//		int otp = 100000 + rnd.nextInt(900000);
+//		author.setOtp(otp);
+//	    
+//		
+//		
+//	    Role author_role = new Role(2,"AUTHOR");
+//	    Role admin_role = new Role(1,"ADMIN");
+//	    Set<Role> roles = new HashSet<>();
+//	    roles.add(author_role);
+//	    roles.add(admin_role);
+//	    
+//	    
+//		Long id = authorService.saveAuthor(author);
+//		author.setRoles(roles);
+//		authorService.saveAuthor(author);
+//		author.setId(id);
+//		
+//		
+//		new Mail().sendMail(author);
+//		
+//		logger.info("Author -> {}",author.toString());
+//			responce.put("type", "success");
+//			responce.put("obj", author);
+//			return responce.toJSONString();
+//			
+//		}	
 }
 	
 	
