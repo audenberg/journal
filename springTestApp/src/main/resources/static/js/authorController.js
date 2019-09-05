@@ -31,7 +31,7 @@ app.controller('authorCtrl', function($scope,$http) {
     $scope.author= $scope.initAuthor;
     
     $scope.registerAuthor = function(){
-    	$scope.CSRF_TOKEN = $("meta[name='_csrf']").attr("content");
+    	 $scope.CSRF_TOKEN = $("meta[name='_csrf']").attr("content");
     	console.log(angular.toJson($scope.author));
     	console.log("CSRF_Token:"+ $scope.CSRF_TOKEN);
     	var method = "POST";
