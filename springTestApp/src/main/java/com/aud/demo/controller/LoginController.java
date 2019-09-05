@@ -8,19 +8,14 @@ import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -31,12 +26,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.aud.demo.model.Author;
 import com.aud.demo.model.Role;
-import com.aud.demo.model.User;
 import com.aud.demo.repository.RoleRepository;
 import com.aud.demo.service.AuthorService;
-
-
 
 
 
@@ -47,32 +40,27 @@ public class LoginController {
 	private AuthorService authorService;
 	
 	
+	
 	@Autowired
     private RoleRepository roleRepository;
 
-	Logger logger = LoggerFactory.getLogger(this.getClass());
-	
-	
 	@RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
-	public ModelAndView login(HttpSession session){
+	public ModelAndView login(){
 		
-		ModelAndView modelAndView = new ModelAndView();
+		ModelAndView modelAndView = new ModelAndView();  //we are using thymeleaf so use modelview(obj+view)
 		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication(); //check authentication
 		
-		System.out.println("Authname"+auth.getName());
+		System.out.println("Authname"+auth.getName());    //getName it means user name in ur exp we use email
 		
-		User author = authorService.findAuthorByEmail(auth.getName());
-		logger.info("User details:{}",author);
-		session.setAttribute("author", author);
-		if(author!=null){
-			org.springframework.security.core.userdetails.User principal =(org.springframework.security.core.userdetails.User) auth.getPrincipal();
-			logger.info("Logger in user details are:{}",principal.toString());
-			modelAndView.addObject("userName", "Logged in as:" + author.getFname() + " " + author.getLname() );
+		Author author = authorService.findAuthorByEmail(auth.getName()); //checking through email from db
+		
+		if(author!=null) {
+			modelAndView.addObject("userName", "Logged in as:" + author.getFname() + " " + author.getLname() ); //userName from thymeleaf
+			//after geting email we are fetching author
 			
 			
-			
-			Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+			Collection<? extends GrantedAuthority> authorities = auth.getAuthorities(); //grantedauthority is used spring collection of roles
 			 
 			        List<String> roles = new ArrayList<String>();
 			 
@@ -81,8 +69,8 @@ public class LoginController {
 			        }
 			        System.out.println(roles);    
 			
-			if(!author.isVerified()){
-			modelAndView.addObject("successMessage", "User has been registered successfully");
+			if(!author.isVerified()){ //this is for otp  
+//			modelAndView.addObject("successMessage", "User has been registered successfully");
 			
 			modelAndView.setViewName("verifyOTP");
 			return modelAndView;
@@ -90,7 +78,7 @@ public class LoginController {
 			}else {
 				if(roles.contains("USER")) {
 					System.out.println("reached USER ROle");
-					modelAndView.setViewName("redirect:/admin/author");
+					modelAndView.setViewName("redirect:/admin/author"); //this url mapping is done in ctrl
 					return modelAndView;
 				}else if(roles.contains("ADMIN")) {
 					System.out.println("reached Admin ROle");
@@ -100,12 +88,12 @@ public class LoginController {
 			}
 			
 		}
-	  
-	  else {
+	   
+	  else { // if the user is not authenticated
 			System.out.println("reached new author");
 			modelAndView.addObject("userName", "" );
 			modelAndView.addObject("successMessage", "");
-			modelAndView.setViewName("login");
+			modelAndView.setViewName("login"); 
 			return modelAndView;
 		}
 		
@@ -118,11 +106,11 @@ public class LoginController {
 	public ModelAndView registration(){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		User author = authorService.findAuthorByEmail(auth.getName());
+		Author author = authorService.findAuthorByEmail(auth.getName());
 		ModelAndView modelAndView = new ModelAndView();
 		if(author==null) {
 		
-		User author1 = new User();
+		Author author1 = new Author();
 		modelAndView.addObject("user", author1);
 		modelAndView.setViewName("registration");
 		return modelAndView;
@@ -134,11 +122,11 @@ public class LoginController {
 		
 	}
 	
-	@Transactional
+	
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
-	public ModelAndView createNewAuthor(@Valid User author, BindingResult bindingResult,HttpServletRequest request) {
+	public ModelAndView createNewAuthor(@Valid Author author, BindingResult bindingResult,HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView();
-		User authorExits = authorService.findAuthorByEmail(author.getEmail());
+		Author authorExits = authorService.findAuthorByEmail(author.getEmail());
 		if (authorExits != null) {
 			bindingResult
 					.rejectValue("email", "error.user",
@@ -149,19 +137,9 @@ public class LoginController {
 		} else {
 			
 			author.setVerified(false);
-			author.setActive(1);
 			Random rnd = new Random();
 			int otp = 100000 + rnd.nextInt(900000);
 			author.setOtp(otp);
-			
-			Role author_role = new Role(2,"AUTHOR");
-		   
-			
-			
-			author.setPassword( new BCryptPasswordEncoder().encode(author.getPassword()));
-			long id = authorService.saveAuthor(author);
-			author.setId(id);
-			author.setRoles(new HashSet<Role>(Arrays.asList(author_role)));
 			authorService.saveAuthor(author);
 			
 			
@@ -180,19 +158,18 @@ public class LoginController {
 	}
 	
 	
-	@RequestMapping(value = "/validateUser", method = RequestMethod.POST)
+	@RequestMapping(value = "/validateAuthor", method = RequestMethod.POST)
 	public ModelAndView validateNewAuthor(@RequestParam("otp") int otp) {
 		ModelAndView modelAndView = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		User author = authorService.findAuthorByEmail(auth.getName());
-		
+		Author author = authorService.findAuthorByEmail(auth.getName());
+//		System.out.println("OTP:"+otp);
+		modelAndView.setViewName("/");
 		if (author != null) {
 		 if(author.getOtp()==otp) {
 			author.setVerified(true);
-			Role author_role = new Role(2,"AUTHOR");
-		    Role admin_role = new Role(1,"ADMIN");
-			
-			author.setRoles(new HashSet<Role>(Arrays.asList(author_role,admin_role)));
+			Role userRole = roleRepository.findByRole("USER");
+			author.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
 			
 	
 			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(auth.getAuthorities());
@@ -245,11 +222,11 @@ public class LoginController {
 	public ModelAndView forgotPassword(){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		User user = authorService.findAuthorByEmail(auth.getName());
+		Author user = authorService.findAuthorByEmail(auth.getName());
 		ModelAndView modelAndView = new ModelAndView();
 		if(user==null) {
 		
-		User user1 = new User();
+		Author user1 = new Author();
 		modelAndView.addObject("user", user1);
 		modelAndView.setViewName("forgotPassword");
 		return modelAndView;
@@ -269,11 +246,11 @@ public class LoginController {
 	public ModelAndView forgotPasswordEmail(){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		User user = authorService.findAuthorByEmail(auth.getName());
+		Author user = authorService.findAuthorByEmail(auth.getName());
 		ModelAndView modelAndView = new ModelAndView();
 		if(user==null) {
 		
-		User user1 = new User();
+		Author user1 = new Author();
 		modelAndView.addObject("user", user1);
 		modelAndView.setViewName("forgotPassword");
 		return modelAndView;

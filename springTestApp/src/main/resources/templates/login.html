@@ -15,7 +15,9 @@
   	<script th:src="@{/js/angular.min.js}"></script>
   	<script th:src="@{/js/loginController.js}" ></script>
   	
-  	
+  	<meta name="_csrf" th:content="${_csrf.token}"/>
+<!-- default header name is X-CSRF-TOKEN -->
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   	
 </head>
 
@@ -34,8 +36,9 @@
   <p >Login / Singup to continue using the site.</p> 
   </div>
   
-  <div sec:authorize="isAuthenticated()" class="col-sm-2">
+  <div sec:authorize="isAuthenticated()" class="col-sm-2">     <!-- thymeleaf security -->
   	<p style="font-size: 10pt; color: #003333;" th:text="${userName}" />
+  	
     <form th:action="@{/logout}" method="post">
             <input class="btn btn-md btn-primary btn-block" type="submit" value="Sign Out"/>
         </form>
@@ -52,7 +55,7 @@
    	<!--  registration code goes here -->
     </div>
     
-    <div sec:authorize="isAnonymous()" class="col-sm-4" >
+    <div sec:authorize="isAnonymous()" class="col-sm-4" >  <!-- if user is not login then only show the login page-->
     <div class="jumbotron">
      
 		<form th:action="@{/login}" method="POST" class="form-signin">
@@ -64,7 +67,7 @@
 			<input type="password"  th:placeholder="Password"
 				id="password" name="password" class="form-control" /> <br /> 
 				
-			<div align="center" th:if="${param.error}">
+			<div align="center" th:if="${param.error}"> <!-- ..  -->
 				<p style="font-size: 20; color: #FF1C19;">Email or Password invalid, please verify</p>
 			</div>
 			

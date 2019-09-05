@@ -46,8 +46,10 @@
 				</button>
 				</div>
 				<div class="col-md-2">
+				
 				<div sec:authorize="isAuthenticated()">
   	<p style="font-size: 10pt; color: #003333;" th:text="${userName}" />
+  	
     <form th:action="@{/logout}" method="post">
             <input class="btn btn-md btn-primary btn-block" type="submit" value="Sign Out"/>
         </form>
@@ -108,6 +110,7 @@
         
         
         <form id="authorForm" action="#">
+        
         <input type="hidden" class="form-control" id="id" ng-model="author.id">
          <div class="form-group">
          <label class="error">{{errors.fnameErr}}</label><br>

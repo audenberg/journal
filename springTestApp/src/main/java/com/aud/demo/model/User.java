@@ -3,26 +3,26 @@ package com.aud.demo.model;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 
 
 
-@Entity
+@MappedSuperclass
 public class User {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
 	
+	Long id;
 	@NotEmpty(message = "*Please provide First Name")
 	String fname;
 	String lname;
@@ -40,17 +40,14 @@ public class User {
 	String state;
 	String country;
 	String pincode;
+	
 	int active;
 	int otp;
 	boolean verified;
 	
-	String pancard;
-
-	
-	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles;
+	private Set<Role> roles; //collection->set
 	
 	
 	public User() {
@@ -85,7 +82,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "Author [id=" + id + ", fname=" + fname + ", lname=" + lname + ", email=" + email + ", mobile=" + mobile + ", line1=" + line1
+		return "Person [id=" + id + ", fname=" + fname + ", lname=" + lname + ", email=" + email + ", mobile=" + mobile + ", line1=" + line1
 				+ ", line2=" + line2 + ", city=" + city + ", state=" + state + ", country=" + country + ", pincode="
 				+ pincode + "]";
 	
@@ -137,15 +134,6 @@ public class User {
 		this.verified = verified;
 		this.roles = roles;
 	}
-	
-	public String getPancard() {
-		return pancard;
-	}
-
-	public void setPancard(String pancard) {
-		this.pancard = pancard;
-	}
-
 
 	public String getLine1() {
 		return line1;

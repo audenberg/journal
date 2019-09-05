@@ -36,7 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			jdbcAuthentication()
 				.usersByUsernameQuery(usersQuery)
 				.authoritiesByUsernameQuery(rolesQuery)
-				.dataSource(dataSource)
+				.dataSource(dataSource) // for database connection
 				.passwordEncoder(bCryptPasswordEncoder);
 				
 	}
@@ -53,29 +53,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					.antMatchers("/test").permitAll()
 					.antMatchers("/validateUser").permitAll()
 					.antMatchers("/forgotPassword").permitAll()
-					.antMatchers("/author").hasAnyAuthority(new String[] {"AUTHOR","ADMIN"})
+					.antMatchers("/author","/paper","/uploadFile","/fileupload","/reviewer").hasAnyAuthority(new String[] {"USER","ADMIN"})
+					//.antMatchers("/reviewer").hasAuthority("ADMIN")
 					.antMatchers("/admin").hasAuthority("ADMIN")
 					.and().authorizeRequests().anyRequest()
-	                .authenticated()
+	                .authenticated() //.
 					.and()
 					.formLogin()
 						.loginPage("/login")
-						.failureUrl("/login?error=true")
+						.failureUrl("/login?error=true") // if user enter invalid credentials
 						.defaultSuccessUrl("/").permitAll()
 						.usernameParameter("email")
 						.passwordParameter("password")
 				.and()
 					.logout()
 					.deleteCookies("remove")
-					.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-					.logoutSuccessUrl("/").and().exceptionHandling()
-				.accessDeniedPage("/access-denied");
+					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // no need to mapping in ctrl this well be done through spring
+					.logoutSuccessUrl("/")
+					.and()
+					.exceptionHandling()
+				    .accessDeniedPage("/access-denied"); // still we have to make this page
 	}
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 	    web
-	       .ignoring()
+	       .ignoring() // we allow page to access these resources for these no need to authenticate
 	       .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
 	}
 
